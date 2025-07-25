@@ -13,9 +13,17 @@ const TaskPage = () => {
     showCompleted: false
   })
 
-  const handleAddTask = async (taskData) => {
+const handleAddTask = async (taskData) => {
     try {
-      await taskService.create(taskData)
+      // Map UI field names to database field names
+      const dbTaskData = {
+        title_c: taskData.title,
+        priority_c: taskData.priority,
+        category_c: taskData.category,
+        due_date_c: taskData.dueDate,
+        completed_c: false
+      }
+      await taskService.create(dbTaskData)
       // TaskList will reload automatically due to service layer update
     } catch (err) {
       toast.error("Failed to create task")

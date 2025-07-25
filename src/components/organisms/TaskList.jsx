@@ -30,18 +30,17 @@ const TaskList = ({ filters, onTasksChange }) => {
     loadTasks()
   }, [])
 
-  const handleToggleComplete = async (taskId) => {
+const handleToggleComplete = async (taskId) => {
     try {
       const task = tasks.find(t => t.Id === taskId)
       if (!task) return
 
       const updatedTask = await taskService.update(taskId, {
-        ...task,
-        completed: !task.completed
+        completed_c: !task.completed_c
       })
 
       setTasks(tasks.map(t => t.Id === taskId ? updatedTask : t))
-      toast.success(updatedTask.completed ? "Task completed!" : "Task marked as incomplete")
+      toast.success(updatedTask.completed_c ? "Task completed!" : "Task marked as incomplete")
     } catch (err) {
       toast.error("Failed to update task")
       console.error("Error updating task:", err)
@@ -74,25 +73,25 @@ const TaskList = ({ filters, onTasksChange }) => {
     }
   }
 
-  const filterTasks = (tasks) => {
+const filterTasks = (tasks) => {
     return tasks.filter(task => {
       // Search filter
-      if (filters.searchText && !task.title.toLowerCase().includes(filters.searchText.toLowerCase())) {
+      if (filters.searchText && !task.title_c?.toLowerCase().includes(filters.searchText.toLowerCase())) {
         return false
       }
 
       // Category filter
-      if (filters.categories.length > 0 && !filters.categories.includes(task.category)) {
+      if (filters.categories.length > 0 && !filters.categories.includes(task.category_c)) {
         return false
       }
 
       // Priority filter  
-      if (filters.priorities.length > 0 && !filters.priorities.includes(task.priority)) {
+      if (filters.priorities.length > 0 && !filters.priorities.includes(task.priority_c)) {
         return false
       }
 
       // Completed filter
-      if (!filters.showCompleted && task.completed) {
+      if (!filters.showCompleted && task.completed_c) {
         return false
       }
 
@@ -100,28 +99,28 @@ const TaskList = ({ filters, onTasksChange }) => {
     })
   }
 
-  const sortTasks = (tasks) => {
+const sortTasks = (tasks) => {
     return [...tasks].sort((a, b) => {
       // Completed tasks to bottom
-      if (a.completed !== b.completed) {
-        return a.completed ? 1 : -1
+      if (a.completed_c !== b.completed_c) {
+        return a.completed_c ? 1 : -1
       }
 
       // Sort by priority (high > medium > low)
       const priorityOrder = { high: 3, medium: 2, low: 1 }
-      if (a.priority !== b.priority) {
-        return priorityOrder[b.priority] - priorityOrder[a.priority]
+      if (a.priority_c !== b.priority_c) {
+        return priorityOrder[b.priority_c] - priorityOrder[a.priority_c]
       }
 
       // Sort by due date (earlier dates first)
-      if (a.dueDate && b.dueDate) {
-        return new Date(a.dueDate) - new Date(b.dueDate)
+      if (a.due_date_c && b.due_date_c) {
+        return new Date(a.due_date_c) - new Date(b.due_date_c)
       }
-      if (a.dueDate && !b.dueDate) return -1
-      if (!a.dueDate && b.dueDate) return 1
+      if (a.due_date_c && !b.due_date_c) return -1
+      if (!a.due_date_c && b.due_date_c) return 1
 
       // Sort by creation date (newest first)
-      return new Date(b.createdAt) - new Date(a.createdAt)
+      return new Date(b.created_at_c || b.CreatedOn) - new Date(a.created_at_c || a.CreatedOn)
     })
   }
 
